@@ -9,7 +9,10 @@
 	"require":{
 		"php":">=5.4.0",
 		"netherphp/object":"dev-master",
-		"netherphp/option":"dev-master"
+		"netherphp/option":"dev-master",
+	},
+	"suggest": {
+		"netherphp/stash":"To keep a global cache interface open throughout the application."
 	},
 	"autoload":{
 		"psr-0": {
