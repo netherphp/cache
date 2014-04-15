@@ -1,0 +1,19 @@
+{
+	"name":"netherphp/cache",
+	"description":"A cache interface.",
+	"keywords":["nether","php","cache"],
+	"license":"BSD-2-Clause",
+	"authors":[
+		{ "name":"Bob Majdak Jr","email":"bob@majdak.net","homepage":"http://majdak.net","role":"developer" }
+	],
+	"require":{
+		"php":">=5.4.0",
+		"netherphp/object":"dev-master",
+		"netherphp/option":"dev-master"
+	},
+	"autoload":{
+		"psr-0": {
+			"Nether\\": "src/"
+		}
+	}
+}
