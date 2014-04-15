@@ -1,0 +1,4 @@
+cache
+=====
+
+A cache interface.
