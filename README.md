@@ -77,5 +77,8 @@ the alias defined in the cache-driver-load option. You do this by adding another
 argument to the calls, which is an array of the caches you want to use.
 
 
-
 	$cache->Set('test','test data',['Disk']);
+	
+# Notes
+
+* All options should be set BEFORE you create the instance of Nether\Cache.
