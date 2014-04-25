@@ -7,14 +7,55 @@ use \Exception;
 
 Option::Define([
 	'cache-autostash'    => true,
+	/*//option/
+	@type boolean
+	define if cache should automatically attempt to stash itself when created.
+	//*/
+
 	'cache-stash-name'   => 'cache',
+	/*//option/
+	@type string
+	the key name the cache will auto stash under.
+	//*/
+
 	'cache-verbose-get'  => true,
+	/*//option/
+	@type boolean
+	if true successful cache hits will return an object with properites which
+	will say which cache the data was fetched from, the key, the full key, and
+	the data. if false, only the data is returned as it was.
+	//*/
+
 	'cache-key-prefix'   => 'nether-cache',
+	/*//option/
+	@type string
+	define a prefix to add to cache keys so that multiple applications could
+	share cache servers if they had to.
+	//*/
+
 	'cache-drivers-load' => [
-		'App' => 'Nether\\Cache\\Appcache',
-		'Mem' => 'Nether\\Cache\\Memcache'
+		'App'  => 'Nether\\Cache\\Appcache',
+		'Mem'  => 'Nether\\Cache\\Memcache',
+		'Disk' => 'Nether\\Cache\\Diskcache'
 	],
+	/*//option/
+	@type array
+	define a list of cache drivers to automatically load. specfied as an array
+	with the key being the alias you use to reference the cache, and the value
+	being the class which extends Nether\Cache\DriverInterface.
+	//*/
+
 	'cache-drivers-use'  => ['App','Mem']
+	/*//option/
+	@type array
+	a list of cache drivers to use automatically when performing operations when
+	specific drivers are not listed. this will allow you to cache most things
+	like user objects in all the quick volitile caches automatically. when you
+	want to cache something special to disk only (like a huge cron'd query) you
+	can specify the disk driver in the use parametre of the methods on this
+	class.
+	//*/
+
 ]);
 
 class Cache {
