@@ -66,6 +66,48 @@ class Cache {
 	list of currently active driver objects.
 	//*/
 
+	protected $HitCount = 0;
+	/*//
+	@type int
+	number of cache requests that ended in hits.
+	//*/
+
+	protected $MissCount = 0;
+	/*//
+	@type int
+	number of cache requests that ended in misses.
+	//*/
+
+	////////////////
+	////////////////
+
+	protected $Logging = false;
+	/*//
+	@type bool
+	if we should log the cache commands or not.
+	//*/
+
+	protected $LoggingData = [];
+	/*//
+	@type array
+	a list of all the cache commands.
+	//*/
+
+	protected function Log($cmd,$key,$res=null) {
+		$line = "{$cmd}({$res}): {$key}";
+		$this->LoggingData[] = $line;
+		return;
+	}
+
+	public function EnableLogging($state) {
+		$this->Logging = $state;
+		return $this;
+	}
+
+	public function GetLoggingData() {
+		return $this->LoggingData;
+	}
+
 	////////////////
 	////////////////
 
@@ -178,12 +220,18 @@ class Cache {
 		if(!$use)
 		$use = Option::Get('cache-drivers-use');
 
+		$missed = [];
 		foreach($this->Drivers as $dkey => $driver) {
 			if(!in_array($dkey,$use)) continue;
 
 			$value = $driver->Get($this->GetFullKey($key));
 
 			if($value !== null) {
+				$this->Log('get',$key,$dkey);
+				$this->HitCount++;
+
+				$this->Set($key,$value,$missed);
+
 				if(Option::Get('cache-verbose-get')) {
 					return (object)[
 						'Cache'   => $dkey,
@@ -195,8 +243,12 @@ class Cache {
 					return $value;
 				}
 			}
+
+			$missed[] = $dkey;
 		}
 
+		$this->MissCount++;
+		$this->Log('get',$key,'false');
 		return null;
 	}
 
@@ -242,9 +294,9 @@ class Cache {
 		}
 
 		return (object)[
-			'HitCount'   => $hit,
-			'MissCount'  => $miss,
-			'QueryCount' => ($hit+$miss),
+			'HitCount'   => $this->HitCount,
+			'MissCount'  => $this->MissCount,
+			'QueryCount' => ($this->HitCount+$this->MissCount),
 			'ConnectTime' => 0,
 			'QueryTime' => 0
 		];
