@@ -70,12 +70,25 @@ class Cache {
 	////////////////
 
 	public function __construct() {
+
+		if(Option::Get('cache-autostash'))
+		Stash::Set(Option::Get('cache-stash-name'),$this);
+
 		$this->LoadDrivers();
 		return;
 	}
 
 	////////////////
 	////////////////
+
+	public function GetDriver($key) {
+	/*//
+	@argv string Key
+	fetch a driver. mainly so we can query memcache about shit.
+	//*/
+		if(array_key_exists($key,$this->Drivers)) return $this->Drivers[$key];
+		else return false;
+	}
 
 	protected function LoadDrivers() {
 	/*//
@@ -231,7 +244,9 @@ class Cache {
 		return (object)[
 			'HitCount'   => $hit,
 			'MissCount'  => $miss,
-			'QueryCount' => ($hit+$miss)
+			'QueryCount' => ($hit+$miss),
+			'ConnectTime' => 0,
+			'QueryTime' => 0
 		];
 	}
 

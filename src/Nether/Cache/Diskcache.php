@@ -27,7 +27,7 @@ class Diskcache extends DriverInterface {
 	//*/
 
 		$this->Path = rtrim($path,'\\/');
-		reutrn;
+		return;
 	}
 
 	////////////////

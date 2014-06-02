@@ -56,6 +56,10 @@ class Memcache extends DriverInterface {
 		return;
 	}
 
+	public function GetStats() {
+		return $this->Driver->getExtendedStats();
+	}
+
 	////////////////
 	////////////////
 
