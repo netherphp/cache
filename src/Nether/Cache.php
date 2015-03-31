@@ -227,9 +227,12 @@ class Cache {
 			$value = $driver->Get($this->GetFullKey($key));
 
 			if($value !== null) {
-				$this->Log('get',$key,$dkey);
-				$this->HitCount++;
+				if($dkey != 'App') {
+					$this->Log('get',$key,$dkey);
+					$this->HitCount++;
+				}
 
+				// back fill any closer caches if we found something.
 				$this->Set($key,$value,$missed);
 
 				if(Option::Get('cache-verbose-get')) {
@@ -259,13 +262,13 @@ class Cache {
 	store a specified value under the key name in the cache.
 	//*/
 
-		if(!$use)
-		$use = Option::Get('cache-drivers-use');
+		if(!is_array($use)) $use = Option::Get('cache-drivers-use');
 
 		foreach($this->Drivers as $dkey => $driver) {
 			if(!in_array($dkey,$use)) continue;
 
 			$driver->Set($this->GetFullKey($key),$value);
+			$this->Log('set',$key,$dkey);
 		}
 
 		return;
