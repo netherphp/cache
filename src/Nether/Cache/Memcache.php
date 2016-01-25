@@ -21,7 +21,7 @@ class Memcache extends DriverInterface {
 	////////////////
 
 	public function __construct() {
-		$this->Driver = new \Memcache;
+		$this->Driver = new \Memcached;
 
 		$pool = Nether\Option::Get('cache-memcache-pool');
 
@@ -57,7 +57,7 @@ class Memcache extends DriverInterface {
 	}
 
 	public function GetStats() {
-		return $this->Driver->getExtendedStats();
+		return $this->Driver->getStats();
 	}
 
 	////////////////
