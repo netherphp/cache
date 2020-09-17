@@ -227,10 +227,10 @@ class Cache {
 			$value = $driver->Get($this->GetFullKey($key));
 
 			if($value !== null) {
-				if($dkey != 'App') {
+				//if($dkey != 'App') {
 					$this->Log('get',$key,$dkey);
 					$this->HitCount++;
-				}
+				//}
 
 				// back fill any closer caches if we found something.
 				$this->Set($key,$value,$missed);
