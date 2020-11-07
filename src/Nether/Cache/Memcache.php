@@ -92,10 +92,10 @@ class Memcache extends DriverInterface {
 		}
 	}
 
-	public function Set($key,$value) {
+	public function Set($key,$value,$ttl=null) {
 		if(!is_object($this->Driver)) return;
 
-		$this->Driver->set($key,serialize($value));
+		$this->Driver->set($key,serialize($value),($ttl??0));
 
 		return;
 	}

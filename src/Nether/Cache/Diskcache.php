@@ -149,7 +149,7 @@ class Diskcache extends DriverInterface {
 		return null;
 	}
 
-	public function Set($key,$value) {
+	public function Set($key,$value,$ttl=null) {
 		if(!$this->IsPathValid()) return;
 
 		$file = $this->GetFileName($key);

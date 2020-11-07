@@ -39,7 +39,7 @@ class Appcache extends DriverInterface {
 		}
 	}
 
-	public function Set($key,$value) {
+	public function Set($key,$value,$ttl=null) {
 		$this->Storage[$key] = $value;
 
 		return;
