@@ -255,7 +255,7 @@ class Cache {
 		return null;
 	}
 
-	public function Set($key,$value,$use=null) {
+	public function Set($key,$value,$use=null,$ttl=null) {
 	/*//
 	@argv string Key, mixed Value
 	@argv string Key, mixed Value, array Drivers
@@ -267,7 +267,7 @@ class Cache {
 		foreach($this->Drivers as $dkey => $driver) {
 			if(!in_array($dkey,$use)) continue;
 
-			$driver->Set($this->GetFullKey($key),$value);
+			$driver->Set($this->GetFullKey($key),$value,$ttl);
 			$this->Log('set',$key,$dkey);
 		}
 

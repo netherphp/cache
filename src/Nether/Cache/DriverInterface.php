@@ -70,7 +70,7 @@ abstract class DriverInterface {
 	do whatever. store a null. it won't actually hurt anything.
 	//*/
 
-	abstract public function Set($key,$value);
+	abstract public function Set($key,$value,$ttl=null);
 	/*//
 	@argv string Key, mixed Value
 	@return null
