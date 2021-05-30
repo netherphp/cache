@@ -35,6 +35,7 @@ class Manager {
 	static {
 	/*//
 	@date 2021-05-30
+	forget the data stored there.
 	//*/
 
 		$this->Engines->Each(
@@ -46,28 +47,19 @@ class Manager {
 	}
 
 	public function
-	Flush(string $Key):
+	Flush():
 	static {
 	/*//
 	@date 2021-05-30
+	forget all the data stored there.
 	//*/
 
 		$this->Engines->Each(
 			fn(EngineData $Eng)
-			=> $Eng->Engine->Flush($Key)
+			=> $Eng->Engine->Flush()
 		);
 
 		return $this;
-	}
-
-	public function
-	Has(string $Key):
-	bool {
-	/*//
-	@date 2021-05-30
-	//*/
-
-		return FALSE;
 	}
 
 	public function
@@ -75,7 +67,14 @@ class Manager {
 	mixed {
 	/*//
 	@date 2021-05-30
+	get the data stored there.
 	//*/
+
+		$Engine = NULL;
+
+		foreach($this->Engines as $Engine)
+		if($Engine->Has($Key))
+		return $Engine->Get($Key);
 
 		return NULL;
 	}
@@ -85,9 +84,49 @@ class Manager {
 	mixed {
 	/*//
 	@date 2021-05-30
+	get the full cache data wrapper stored there.
 	//*/
 
+		$Engine = NULL;
+
+		foreach($this->Engines as $Engine)
+		if($Engine->Has($Key))
+		return $Engine->GetCacheData($Key);
+
 		return NULL;
+	}
+
+	public function
+	Has(string $Key):
+	bool {
+	/*//
+	@date 2021-05-30
+	check if data is stored there.
+	//*/
+
+		$Engine = NULL;
+
+		foreach($this->Engines as $Engine)
+		if($Engine->Has($Key))
+		return TRUE;
+
+		return FALSE;
+	}
+
+	public function
+	Set(string $Key, mixed $Value):
+	static {
+	/*//
+	@date 2021-05-30
+	make some data be stored there.
+	//*/
+
+		$this->Engines->Each(
+			fn(EngineData $Eng)
+			=> $Eng->Engine->Set($Key,$Value)
+		);
+
+		return $this;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -107,11 +146,21 @@ class Manager {
 	}
 
 	public function
-	EngineAdd(EngineInterface $Engine, int $Priority=50):
+	EngineAdd(EngineInterface $Engine, ?int $Priority=NULL):
 	static {
 	/*//
 	@date 2021-05-30
 	//*/
+
+		// if no priority specified set it to come after what might
+		// already be in there.
+
+		if($Priority === NULL)
+		$Priority = $this->Engines->Accumulate(
+			0,
+			fn(int $Max, EngineData $Eng)
+			=> ($Eng->Priority >= $Max) ? ($Eng->Priority + 10) : ($Max)
+		);
 
 		($this->Engines)
 		->Push(new EngineData($Engine,$Priority))
