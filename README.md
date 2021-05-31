@@ -8,7 +8,7 @@ Lightweight management of cache storage and retrieval.
 
 Additional cache engines can be implemented with `EngineInterface`.
 
-Licenced under BSD+Patent. See LICENSE for details.
+Licenced under BSD-2-Clause-Patent. See LICENSE for details.
 
 # Usage
 
