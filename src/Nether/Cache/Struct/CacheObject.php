@@ -12,14 +12,18 @@ class CacheObject {
 	public int
 	$Time;
 
+	public ?string
+	$Origin;
+
 	public ?EngineInterface
-	$Source;
+	$Engine;
 
 	public function
-	__Construct(mixed $Data, ?EngineInterface $Source=NULL) {
+	__Construct(mixed $Data, ?EngineInterface $Engine=NULL, ?string $Origin=NULL) {
 		$this->Data = $Data;
 		$this->Time = time();
-		$this->Source = $Source;
+		$this->Engine = $Engine;
+		$this->Origin = $Origin;
 		return;
 	}
 

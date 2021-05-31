@@ -51,3 +51,29 @@ var_dump(
 // bool(false)
 // NULL
 ```
+
+## Debugging
+
+The contents of the cache are wrapped with a small descriptor object that describes the data, and can be inspected by getting a cache object rather than the cache data directly.
+
+* `CacheObject->Time` is the unix timestamp the data was added to the cache.
+* `CacheObject->Engine` will be the the cache engine instance that the data was found in.
+* `CacheObject->Origin` will be NULL unless it is defined when data is set. It is meant to be meta to trace what part of a project pushed the data into the cache.
+
+```php
+$Manager->Set('test', 'geordi', Origin:'engineering');
+print_r($Manager->GetCacheObject('unique-id'));
+```
+
+```
+Nether\Cache\Struct\CacheObject Object
+(
+	[Data]   => geordi
+	[Time]   => 1622487745
+	[Origin] => engineering
+	[Engine] => Nether\Cache\Engines\LocalEngine Object
+		(
+			[...]
+		)
+)
+```

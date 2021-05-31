@@ -105,7 +105,7 @@ implements EngineInterface {
 
 		if($this->Has($Key)) {
 			$Found = clone $this->Data[$Key];
-			$Found->Source = $this;
+			$Found->Engine = $this;
 			return $Found;
 		}
 
@@ -126,13 +126,13 @@ implements EngineInterface {
 	}
 
 	public function
-	Set(string $Key, mixed $Val):
+	Set(string $Key, mixed $Val, ?string $Origin=NULL):
 	void {
 	/*//
 	@date 2021-05-29
 	//*/
 
-		$this->Data[$Key] = new CacheObject($Val);
+		$this->Data[$Key] = new CacheObject($Val, Origin:$Origin);
 		return;
 	}
 

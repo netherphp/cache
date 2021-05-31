@@ -47,7 +47,7 @@ interface EngineInterface {
 	//*/
 
 	public function
-	Set(string $Key, mixed $Val):
+	Set(string $Key, mixed $Val, ?string $Origin=NULL):
 	void;
 	/*//
 	@date 2021-05-30
