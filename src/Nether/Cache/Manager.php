@@ -4,6 +4,7 @@ namespace Nether\Cache;
 
 use Nether\Object\Datastore;
 use Nether\Cache\EngineInterface;
+use Nether\Ki;
 
 class Manager {
 /*//
@@ -70,11 +71,11 @@ class Manager {
 	get the data stored there.
 	//*/
 
-		$Engine = NULL;
+		$Eng = NULL;
 
-		foreach($this->Engines as $Engine)
-		if($Engine->Has($Key))
-		return $Engine->Get($Key);
+		foreach($this->Engines as $Eng)
+		if($Eng->Engine->Has($Key))
+		return $Eng->Engine->Get($Key);
 
 		return NULL;
 	}
@@ -87,11 +88,11 @@ class Manager {
 	get the full cache data wrapper stored there.
 	//*/
 
-		$Engine = NULL;
+		$Eng = NULL;
 
-		foreach($this->Engines as $Engine)
-		if($Engine->Has($Key))
-		return $Engine->GetCacheData($Key);
+		foreach($this->Engines as $Eng)
+		if($Eng->Engine->Has($Key))
+		return $Eng->Engine->GetCacheData($Key);
 
 		return NULL;
 	}
@@ -104,10 +105,10 @@ class Manager {
 	check if data is stored there.
 	//*/
 
-		$Engine = NULL;
+		$Eng = NULL;
 
-		foreach($this->Engines as $Engine)
-		if($Engine->Has($Key))
+		foreach($this->Engines as $Eng)
+		if($Eng->Engine->Has($Key))
 		return TRUE;
 
 		return FALSE;
@@ -127,6 +128,23 @@ class Manager {
 		);
 
 		return $this;
+	}
+
+	public function
+	Where(string $Key):
+	?EngineInterface {
+	/*//
+	@date 2021-05-30
+	get the engine some data is stored in.
+	//*/
+
+		$Eng = NULL;
+
+		foreach($this->Engines as $Eng)
+		if($Eng->Engine->Has($Key))
+		return $Eng->Engine;
+
+		return NULL;
 	}
 
 	////////////////////////////////////////////////////////////////

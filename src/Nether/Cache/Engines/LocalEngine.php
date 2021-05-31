@@ -5,7 +5,7 @@ namespace Nether\Cache\Engines;
 use Nether\Cache\EngineInterface;
 use Nether\Cache\CacheData;
 
-class AppCache
+class LocalEngine
 implements EngineInterface {
 /*//
 @date 2021-05-29
@@ -13,6 +13,35 @@ implements EngineInterface {
 
 	protected array
 	$Data = [];
+	/*//
+	@date 2021-05-30
+	default instance storage.
+	//*/
+
+	static protected array
+	$DataGlobal;
+	/*//
+	@date 2021-05-30
+	global instance storage. only filled if used.
+	//*/
+
+	////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
+
+	public function
+	__Construct(bool $Global=FALSE) {
+	/*//
+	@date 2021-05-30
+	//*/
+
+		if($Global)
+		$this->UseGlobalStorage(TRUE);
+
+		return;
+	}
+
+	////////////////////////////////////////////////////////////////
+	// implement EngineInterface ///////////////////////////////////
 
 	public function
 	Count():
@@ -100,6 +129,32 @@ implements EngineInterface {
 
 		$this->Data[$Key] = new CacheData($Val);
 		return;
+	}
+
+	////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
+
+	public function
+	UseGlobalStorage(bool $Use):
+	static {
+	/*//
+	@date 2021-05-30
+	//*/
+
+		if($Use) {
+			if(!isset(static::$DataGlobal))
+			static::$DataGlobal = [];
+
+			unset($this->Data);
+			$this->Data = &static::$DataGlobal;
+		}
+
+		else {
+			unset($this->Data);
+			$this->Data = [];
+		}
+
+		return $this;
 	}
 
 }

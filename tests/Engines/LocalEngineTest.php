@@ -3,7 +3,7 @@
 use PHPUnit\Framework\TestCase;
 use Nether\Cache\Engines;
 
-class AppCacheTest
+class LocalEngineTest
 extends TestCase {
 
 	/** @test */
@@ -14,7 +14,7 @@ extends TestCase {
 	@date 2021-05-30
 	//*/
 
-		$Engine = new Engines\AppCache;
+		$Engine = new Engines\LocalEngine;
 		$Key = 'test';
 		$Value = 'picard';
 
@@ -40,7 +40,7 @@ extends TestCase {
 	@date 2021-05-30
 	//*/
 
-		$Engine = new Engines\AppCache;
+		$Engine = new Engines\LocalEngine;
 		$Iter = 0;
 
 		////////
@@ -70,7 +70,7 @@ extends TestCase {
 	@date 2021-05-30
 	//*/
 
-		$Engine = new Engines\AppCache;
+		$Engine = new Engines\LocalEngine;
 		$Key = 'test';
 		$Value = 'mccoy';
 		$CacheData = NULL;
@@ -82,6 +82,69 @@ extends TestCase {
 		$this->AssertInstanceOf('Nether\\Cache\\CacheData',$CacheData);
 		$this->AssertEquals($Value,$CacheData->Data);
 		$this->AssertGreaterThanOrEqual($Now,$CacheData->Time);
+
+		return;
+	}
+
+	/** @test */
+	public function
+	TestDataGlobalStorage():
+	void {
+	/*//
+	@date 2021-05-30
+	//*/
+
+		$Engine1 = new Engines\LocalEngine;
+		$Engine2 = new Engines\LocalEngine;
+		$Key = 'test';
+		$Value = 'geordi';
+
+		$Engine1->UseGlobalStorage(TRUE);
+		$Engine2->UseGlobalStorage(TRUE);
+
+		////////
+
+		$Engine1->Set($Key,$Value);
+
+		$this->AssertEquals(
+			$Value,
+			$Engine1->Get($Key)
+		);
+
+		$this->AssertEquals(
+			$Engine1->Get($Key),
+			$Engine2->Get($Key)
+		);
+
+		return;
+	}
+
+	/** @test */
+	public function
+	TestDataGlobalStorageConstructor():
+	void {
+	/*//
+	@date 2021-05-30
+	//*/
+
+		$Engine1 = new Engines\LocalEngine(Global: TRUE);
+		$Engine2 = new Engines\LocalEngine(Global: TRUE);
+		$Key = 'test';
+		$Value = 'uhura';
+
+		////////
+
+		$Engine1->Set($Key,$Value);
+
+		$this->AssertEquals(
+			$Value,
+			$Engine1->Get($Key)
+		);
+
+		$this->AssertEquals(
+			$Engine1->Get($Key),
+			$Engine2->Get($Key)
+		);
 
 		return;
 	}
