@@ -172,7 +172,7 @@ extends TestCase {
 
 	/** @test */
 	public function
-	TestCacheObjectSoure():
+	TestCacheObjectEngine():
 	void {
 	/*//
 	@date 2021-05-30
@@ -192,13 +192,36 @@ extends TestCase {
 
 		$Manager->Set($Key,$Value);
 		$Result = $Manager->GetCacheObject($Key);
-		$this->AssertTrue($Result->Source === $Engine1);
+		$this->AssertTrue($Result->Engine === $Engine1);
 
 		$Engine1->Drop($Key);
 		$Result = $Manager->GetCacheObject($Key);
-		$this->AssertTrue($Result->Source === $Engine2);
+		$this->AssertTrue($Result->Engine === $Engine2);
 
 		return;
 	}
+
+	/** @test */
+	public function
+	TestCacheObjectOrigin():
+	void {
+	/*//
+	@date 2021-05-30
+	//*/
+
+		$Manager = (
+			(new Cache\Manager)
+			->EngineAdd(new Cache\Engines\LocalEngine)
+		);
+
+		$Manager->Set('test1', 'chekov');
+		$Manager->Set('test2', 'chekov', Origin:'unit2');
+
+		$this->AssertNull($Manager->GetCacheObject('test1')->Origin);
+		$this->AssertEquals('unit2',$Manager->GetCacheObject('test2')->Origin);
+
+		return;
+	}
+
 
 }

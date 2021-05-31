@@ -108,7 +108,7 @@ implements EngineInterface {
 
 		if($Found instanceof CacheObject) {
 			$Found = clone $Found;
-			$Found->Source = $this;
+			$Found->Engine = $this;
 		}
 
 		return NULL;
@@ -129,7 +129,7 @@ implements EngineInterface {
 	}
 
 	public function
-	Set(string $Key, mixed $Val):
+	Set(string $Key, mixed $Val, ?string $Origin=NULL):
 	void {
 	/*//
 	@date 2021-05-29
@@ -137,7 +137,7 @@ implements EngineInterface {
 
 		$this->Pool->Add(
 			$Key,
-			serialize(new CacheObject($Val)),
+			serialize(new CacheObject($Val, Origin:$Origin)),
 			($this->Compress)?(MEMCACHE_COMPRESSED):(0)
 		);
 

@@ -115,7 +115,7 @@ class Manager {
 	}
 
 	public function
-	Set(string $Key, mixed $Value):
+	Set(string $Key, mixed $Value, ?string $Origin=NULL):
 	static {
 	/*//
 	@date 2021-05-30
@@ -124,7 +124,7 @@ class Manager {
 
 		$this->Engines->Each(
 			fn(Struct\EngineObject $Eng)
-			=> $Eng->Engine->Set($Key,$Value)
+			=> $Eng->Engine->Set($Key,$Value,Origin:$Origin)
 		);
 
 		return $this;
