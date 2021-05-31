@@ -3,7 +3,7 @@
 namespace Nether\Cache\Engines;
 
 use Nether\Cache\EngineInterface;
-use Nether\Cache\CacheData;
+use Nether\Cache\Struct\CacheObject;
 
 class LocalEngine
 implements EngineInterface {
@@ -95,14 +95,19 @@ implements EngineInterface {
 	}
 
 	public function
-	GetCacheData(string $Key):
-	?CacheData {
+	GetCacheObject(string $Key):
+	?CacheObject {
 	/*//
 	@date 2021-05-29
 	//*/
 
-		if($this->Has($Key))
-		return $this->Data[$Key];
+		$Found = NULL;
+
+		if($this->Has($Key)) {
+			$Found = clone $this->Data[$Key];
+			$Found->Source = $this;
+			return $Found;
+		}
 
 		return NULL;
 	}
@@ -116,7 +121,7 @@ implements EngineInterface {
 
 		return (
 			array_key_exists($Key,$this->Data)
-			&& ($this->Data[$Key] instanceof CacheData)
+			&& ($this->Data[$Key] instanceof CacheObject)
 		);
 	}
 
@@ -127,7 +132,7 @@ implements EngineInterface {
 	@date 2021-05-29
 	//*/
 
-		$this->Data[$Key] = new CacheData($Val);
+		$this->Data[$Key] = new CacheObject($Val);
 		return;
 	}
 

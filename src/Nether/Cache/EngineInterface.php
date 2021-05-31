@@ -2,7 +2,7 @@
 
 namespace Nether\Cache;
 
-use Nether\Cache\CacheData;
+use Nether\Cache\Struct\CacheObject;
 
 interface EngineInterface {
 
@@ -31,8 +31,8 @@ interface EngineInterface {
 	//*/
 
 	public function
-	GetCacheData(string $Key):
-	?CacheData;
+	GetCacheObject(string $Key):
+	?CacheObject;
 	/*//
 	@date 2021-05-30
 	get the full cache data wrapper stored here.

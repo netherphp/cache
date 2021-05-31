@@ -6,7 +6,7 @@ use Nether\Cache\Engines;
 
 use Memcache;
 use Nether\Cache\EngineInterface;
-use Nether\Cache\CacheData;
+use Nether\Cache\Struct\CacheObject;
 
 class MemcacheEngine
 implements EngineInterface {
@@ -91,15 +91,15 @@ implements EngineInterface {
 
 		$Found = unserialize($this->Pool->Get($Key));
 
-		if($Found instanceof CacheData)
+		if($Found instanceof CacheObject)
 		return $Found->Data;
 
 		return NULL;
 	}
 
 	public function
-	GetCacheData(string $Key):
-	?CacheData {
+	GetCacheObject(string $Key):
+	?CacheObject {
 	/*//
 	@date 2021-05-29
 	//*/
@@ -108,8 +108,10 @@ implements EngineInterface {
 			$Key
 		));
 
-		if($Found instanceof CacheData)
-		return $Found;
+		if($Found instanceof CacheObject) {
+			$Found = clone $Found;
+			$Found->Source = $this;
+		}
 
 		return NULL;
 	}
@@ -125,7 +127,7 @@ implements EngineInterface {
 			$Key
 		));
 
-		return ($Found instanceof CacheData);
+		return ($Found instanceof CacheObject);
 	}
 
 	public function
@@ -137,7 +139,7 @@ implements EngineInterface {
 
 		$this->Pool->Add(
 			$Key,
-			serialize(new CacheData($Val)),
+			serialize(new CacheObject($Val)),
 			($this->Compress)?(MEMCACHE_COMPRESSED):(0)
 		);
 

@@ -64,7 +64,7 @@ extends TestCase {
 
 	/** @test */
 	public function
-	TestCacheDataObject():
+	TestCacheObjectObject():
 	void {
 	/*//
 	@date 2021-05-30
@@ -73,15 +73,15 @@ extends TestCase {
 		$Engine = new Engines\LocalEngine;
 		$Key = 'test';
 		$Value = 'mccoy';
-		$CacheData = NULL;
+		$CacheObject = NULL;
 		$Now = time();
 
 		$Engine->Set($Key,$Value);
-		$CacheData = $Engine->GetCacheData($Key);
+		$CacheObject = $Engine->GetCacheObject($Key);
 
-		$this->AssertInstanceOf('Nether\\Cache\\CacheData',$CacheData);
-		$this->AssertEquals($Value,$CacheData->Data);
-		$this->AssertGreaterThanOrEqual($Now,$CacheData->Time);
+		$this->AssertInstanceOf('Nether\\Cache\\Struct\CacheObject',$CacheObject);
+		$this->AssertEquals($Value,$CacheObject->Data);
+		$this->AssertGreaterThanOrEqual($Now,$CacheObject->Time);
 
 		return;
 	}

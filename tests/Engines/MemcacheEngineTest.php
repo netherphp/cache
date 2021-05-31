@@ -3,7 +3,7 @@
 use PHPUnit\Framework\TestCase;
 
 use Nether\Cache\Engines;
-use Nether\Cache\CacheData;
+use Nether\Cache\Struct\CacheObject;
 
 class MemcacheEngineTest
 extends TestCase {
@@ -20,7 +20,7 @@ extends TestCase {
 		$Engine = new Engines\MemcacheEngine(Memcache:$Mock);
 		$Key = static::class;
 		$Value = 'kirk';
-		$CacheData = serialize(new CacheData($Value));
+		$CacheObject = serialize(new CacheObject($Value));
 
 		// set up lies.
 
@@ -28,9 +28,9 @@ extends TestCase {
 		->Method('get')
 		->Will($this->OnConsecutiveCalls(
 			FALSE, FALSE,
-			$CacheData, $CacheData,
+			$CacheObject, $CacheObject,
 			FALSE, FALSE,
-			$CacheData, $CacheData,
+			$CacheObject, $CacheObject,
 			FALSE, FALSE
 		));
 
@@ -42,7 +42,7 @@ extends TestCase {
 		////////
 
 		$Engine->Set($Key,$Value);
-		$Mock->Method('get')->WillReturn($CacheData);
+		$Mock->Method('get')->WillReturn($CacheObject);
 		$this->AssertTrue($Engine->Has($Key));
 		$this->AssertEquals($Value,$Engine->Get($Key));
 

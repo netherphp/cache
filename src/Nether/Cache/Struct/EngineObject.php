@@ -1,10 +1,10 @@
 <?php
 
-namespace Nether\Cache;
+namespace Nether\Cache\Struct;
 
 use Nether\Cache\EngineInterface;
 
-class EngineData {
+class EngineObject {
 
 	public EngineInterface
 	$Engine;

@@ -1,10 +1,10 @@
 <?php
 
 namespace Nether\Cache;
+use Nether\Cache\Struct;
 
 use Nether\Object\Datastore;
 use Nether\Cache\EngineInterface;
-use Nether\Ki;
 
 class Manager {
 /*//
@@ -40,7 +40,7 @@ class Manager {
 	//*/
 
 		$this->Engines->Each(
-			fn(EngineData $Eng)
+			fn(Struct\EngineObject $Eng)
 			=> $Eng->Engine->Drop($Key)
 		);
 
@@ -56,7 +56,7 @@ class Manager {
 	//*/
 
 		$this->Engines->Each(
-			fn(EngineData $Eng)
+			fn(Struct\EngineObject $Eng)
 			=> $Eng->Engine->Flush()
 		);
 
@@ -81,7 +81,7 @@ class Manager {
 	}
 
 	public function
-	GetCacheData(string $Key):
+	GetCacheObject(string $Key):
 	mixed {
 	/*//
 	@date 2021-05-30
@@ -92,7 +92,7 @@ class Manager {
 
 		foreach($this->Engines as $Eng)
 		if($Eng->Engine->Has($Key))
-		return $Eng->Engine->GetCacheData($Key);
+		return $Eng->Engine->GetCacheObject($Key);
 
 		return NULL;
 	}
@@ -123,7 +123,7 @@ class Manager {
 	//*/
 
 		$this->Engines->Each(
-			fn(EngineData $Eng)
+			fn(Struct\EngineObject $Eng)
 			=> $Eng->Engine->Set($Key,$Value)
 		);
 
@@ -158,13 +158,13 @@ class Manager {
 	//*/
 
 		return $this->Engines->Map(
-			fn(EngineData $Eng)
+			fn(Struct\EngineObject $Eng)
 			=> $Eng->Engine
 		);
 	}
 
 	public function
-	EngineAdd(EngineInterface $Engine, ?int $Priority=NULL):
+	EngineAdd(EngineInterface $Engine, ?int $Priority=NULL, ?string $Alias=NULL):
 	static {
 	/*//
 	@date 2021-05-30
@@ -176,14 +176,14 @@ class Manager {
 		if($Priority === NULL)
 		$Priority = $this->Engines->Accumulate(
 			0,
-			fn(int $Max, EngineData $Eng)
+			fn(int $Max, Struct\EngineObject $Eng)
 			=> ($Eng->Priority >= $Max) ? ($Eng->Priority + 10) : ($Max)
 		);
 
 		($this->Engines)
-		->Push(new EngineData($Engine,$Priority))
+		->Push(new Struct\EngineObject($Engine,$Priority),$Alias)
 		->Sort(
-			fn(EngineData $A, EngineData $B)
+			fn(Struct\EngineObject $A, Struct\EngineObject $B)
 			=> $A->Priority <=> $B->Priority
 		);
 
@@ -220,7 +220,7 @@ class Manager {
 	//*/
 
 		$this->Engines->Filter(
-			fn(EngineData $Val)
+			fn(Struct\EngineObject $Val)
 			=> !($Val->Engine instanceof $Class)
 		);
 

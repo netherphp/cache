@@ -133,4 +133,72 @@ extends TestCase {
 		return;
 	}
 
+	/** @test */
+	public function
+	TestEngineAlias():
+	void {
+	/*//
+	@date 2021-05-30
+	//*/
+
+		$Engine1 = new Cache\Engines\LocalEngine;
+		$Engine2 = new Cache\Engines\LocalEngine;
+		$Manager = (
+			(new Cache\Manager)
+			->EngineAdd($Engine1)
+			->EngineAdd($Engine2)
+		);
+
+		$Engines = $Manager->Engines();
+		$this->AssertCount(2,$Engines);
+		$this->AssertTrue($Engines->HasKey(0));
+		$this->AssertTrue($Engines->HasKey(1));
+		$this->AssertFalse($Engines->HasKey(2));
+
+		$Manager
+		->EngineRemoveByKey(0)
+		->EngineRemoveByKey(1)
+		->EngineAdd($Engine1, Alias:'Engine1')
+		->EngineAdd($Engine2, Alias:'Engine2');
+
+		$Engines = $Manager->Engines();
+		$this->AssertCount(2,$Engines);
+		$this->AssertTrue($Engines->HasKey('Engine1'));
+		$this->AssertTrue($Engines->HasKey('Engine2'));
+		$this->AssertFalse($Engines->HasKey(0));
+
+		return;
+	}
+
+	/** @test */
+	public function
+	TestCacheObjectSoure():
+	void {
+	/*//
+	@date 2021-05-30
+	//*/
+
+		$Engine1 = new Cache\Engines\LocalEngine;
+		$Engine2 = new Cache\Engines\LocalEngine;
+		$Manager = (
+			(new Cache\Manager)
+			->EngineAdd($Engine1)
+			->EngineAdd($Engine2)
+		);
+
+		$Key = static::class;
+		$Value = 'sulu';
+		$Result = NULL;
+
+		$Manager->Set($Key,$Value);
+		$Result = $Manager->GetCacheObject($Key);
+		$this->AssertTrue($Result->Source === $Engine1);
+
+		$Engine1->Drop($Key);
+		$Result = $Manager->GetCacheObject($Key);
+		$this->AssertTrue($Result->Source === $Engine2);
+
+		return;
+	}
+
 }
