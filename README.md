@@ -1,16 +1,20 @@
 # Nether Cache
 
-A cache interface.
+Lightweight management of cache storage and retrieval.
 
-This cache is designed to be lightweight. It only includes appcahe, memcache,
-and diskcache, but also provides an abstract to base a new driver from if you
-need something more specialised.
+* `LocalEngine` - caches data in local memory while the app is running.
+* `MemcacheEngine` - accesses memcached network cache.
+* `FilesystemEngine` - cache data as files.
+
+Additional cache engines can be implemented with `EngineInterface`.
+
+Licenced under BSD+Patent. See LICENSE for details.
 
 # Usage
 
 ## Low Level
 
-Create a cache manager and throw cache engines into it. If no priority value is set then the priorities will be set such that the caches will always be checked FIFO. In this example case the LocalEngine will always be checked before the MemCache which will aways be checked before the DiskCache. The priorties can be used to stack caches from fastest to slowest.
+Create a cache manager and throw cache engines into it. If no priority value is set then the priorities will be set such that the caches will always be checked FIFO. In this example case the LocalEngine will always be checked before the MemcacheEngine which will aways be checked before the FilesystemEngine. The priorties can be used to stack caches from fastest to slowest.
 
 ```php
 $Manager = (
@@ -20,7 +24,7 @@ $Manager = (
 		(new Nether\Cache\Engines\MemcacheEngine)
 		->ServerAdd('localhost',11211)
 	)
-	->EngineAdd(new Nether\Cache\Engines\FileEngine)
+	->EngineAdd(new Nether\Cache\Engines\FilesystemEngine)
 );
 ```
 
