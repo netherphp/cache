@@ -1,8 +1,6 @@
 <?php
 
 namespace Nether\Cache\Engines;
-use Nether\Cache\Errors;
-use Nether\Cache\Engines;
 
 use Memcache;
 use Nether\Cache\EngineInterface;
@@ -171,10 +169,13 @@ implements EngineInterface {
 	public function
 	UseGlobalPool(bool $Use):
 	static {
+	/*//
+	@date 2021-05-30
+	//*/
 
 		if($Use) {
 			if(!isset(static::$PoolGlobal))
-			static::$PoolGlobal = static::NewMemcache();
+			static::$PoolGlobal = new Memcache;
 
 			unset($this->Pool);
 			$this->Pool = &static::$Pool;
@@ -182,20 +183,10 @@ implements EngineInterface {
 
 		else {
 			unset($this->Pool);
-			$this->Pool = static::NewMemcache();
+			$this->Pool = new Memcache;
 		}
 
 		return $this;
-	}
-
-	////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////
-
-	static public function
-	NewMemcache(?Memcache $Instance=NULL):
-	Memcache {
-
-		return new Memcache;
 	}
 
 }
