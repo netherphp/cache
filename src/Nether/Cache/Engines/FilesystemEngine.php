@@ -44,6 +44,14 @@ implements EngineInterface {
 	within the root of the cache path.
 	//*/
 
+	protected bool
+	$UseFullDrop = TRUE;
+	/*//
+	@date 2021-06-01
+	if true, will perform extra effort to remove subdirectories if they
+	are empty after dropping the file.
+	//*/
+
 	////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////
 
@@ -70,11 +78,36 @@ implements EngineInterface {
 		$File = $this->GenerateFilename($Key);
 		$Path = $this->GetFilePath($File);
 
-		// this needs to actually check if its a subdir and walk its way
-		// out removing each directory if its empty afterwards.
-
 		if($this->Has($Path))
 		unlink($Path);
+
+		if($this->UseFullDrop)
+		$this->Drop_CleanupEmptyTree($File);
+
+		return;
+	}
+
+	protected function
+	Drop_CleanupEmptyTree($File):
+	void {
+	/*//
+	@date 2021-06-01
+	walks through this path and cleans up any empty subdirectories it might
+	leave laying around otherwise.
+	//*/
+
+		$Iter = 0;
+		$Cur = NULL;
+		$Depth = substr_count($File,DIRECTORY_SEPARATOR) + 1;
+
+		if(str_contains($File,DIRECTORY_SEPARATOR)) {
+			for($Iter = 1; $Iter < $Depth; $Iter++) {
+				$Cur = dirname($File,$Iter);
+
+				if(count(scandir($this->GetFilePath($Cur))) === 2)
+				rmdir($this->GetFilePath($Cur));
+			}
+		}
 
 		return;
 	}
@@ -342,6 +375,17 @@ implements EngineInterface {
 	//*/
 
 		$this->UseKeyPath = $Should;
+		return $this;
+	}
+
+	public function
+	UseFullDrop(bool $Should):
+	static {
+	/*//
+	@date 2021-06-01
+	//*/
+
+		$this->UseFullDrop = $Should;
 		return $this;
 	}
 
