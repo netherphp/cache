@@ -42,15 +42,27 @@ implements EngineInterface {
 	////////////////////////////////////////////////////////////////
 
 	public function
-	__Construct(bool $Global=FALSE, ?Memcache $Memcache=NULL) {
+	__Construct(
+		bool $Global=FALSE,
+		Memcache $Memcache=NULL,
+		array $Servers=[]
+	) {
 	/*//
 	@date 2021-05-30
 	//*/
+
+		// initialize the memcache pool with either the injected dependency
+		// or constructing its own.
 
 		if($Memcache instanceof Memcache)
 		$this->Pool = $Memcache;
 		else
 		$this->UseGlobalPool($Global);
+
+		// if a list of servers was provided, add them to the pool.
+
+		if(count($Servers))
+		$this->ServerAddList($Servers);
 
 		return;
 	}
@@ -159,6 +171,28 @@ implements EngineInterface {
 			$Port,
 			TRUE
 		);
+
+		return $this;
+	}
+
+	public function
+	ServerAddList(array $Input):
+	static {
+	/*//
+	@date 2021-06-02
+	//*/
+
+		$Item = NULL;
+		$Host = NULL;
+		$Port = NULL;
+
+		foreach($Input as $Item) {
+			if(!str_contains($Item,':'))
+			$Item .= ':11211';
+
+			list($Host,$Port) = explode(':',$Item);
+			$this->ServerAdd($Host,$Port);
+		}
 
 		return $this;
 	}

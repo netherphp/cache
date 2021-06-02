@@ -14,21 +14,23 @@ Licenced under BSD-2-Clause-Patent. See LICENSE for details.
 
 ## Low Level
 
-Create a cache manager and throw cache engines into it. If no priority value is set then the priorities will be set such that the caches will always be checked FIFO. In this example case the LocalEngine will always be checked before the MemcacheEngine which will aways be checked before the FilesystemEngine. The priorties can be used to stack caches from fastest to slowest.
+Create a cache manager and throw cache engines into it. If no priority value is
+set then the priorities will be set such that the caches will always be checked
+FIFO. In this example case the LocalEngine will always be checked before the
+MemcacheEngine which will aways be checked before the FilesystemEngine. The
+priorties can be used to stack caches from fastest to slowest.
 
 ```php
-$Manager = (
-	(new Nether\Cache\Manager)
-	->EngineAdd(new Nether\Cache\Engines\LocalEngine)
-	->EngineAdd(
-		(new Nether\Cache\Engines\MemcacheEngine)
-		->ServerAdd('localhost',11211)
-	)
-	->EngineAdd(
-		(new Nether\Cache\Engines\FilesystemEngine)
-		->SetPath('/where/ever')
-	)
-);
+$Manager = new Nether\Cache\Manager;
+
+$Manager
+->EngineAdd(new Nether\Cache\Engines\LocalEngine)
+->EngineAdd(new Nether\Cache\Engines\MemcacheEngine(
+	Servers: [ 'localhost:11211' ]
+))
+->EngineAdd(new Nether\Cache\Engines\FilesystemEngine(
+	Path: '/where/ever'
+));
 ```
 
 Throw data into the caches, ask about it, and get it back out.

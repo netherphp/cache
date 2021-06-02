@@ -67,4 +67,23 @@ extends TestCase {
 		return;
 	}
 
+	/** @test */
+	public function
+	TestServersViaConstructor():
+	void {
+	/*//
+	@date 2021-06-02
+	//*/
+
+		$Engine = new Engines\MemcacheEngine(
+			Servers: [ 'localhost:11211' ]
+		);
+
+		// lmafo i do not think the basic bitch memcache ext without the d
+		// actually has a way to query what servers are in the pool. wtf.
+
+		$this->AssertTrue($Engine instanceof Engines\MemcacheEngine);
+		return;
+	}
+
 }
