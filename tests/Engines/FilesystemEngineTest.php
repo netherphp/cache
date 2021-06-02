@@ -146,7 +146,7 @@ rerun it as many tests first check that it initialized empty.
 		$Value = 'chapel';
 		$ExpectedFilename = sprintf(
 			'file://%s/%s',
-			$Path, hash($Hash,$Key)
+			str_replace('\\','/',$Path), hash($Hash,$Key)
 		);
 
 		$Engine->UseHashType($Hash);

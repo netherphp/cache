@@ -24,7 +24,10 @@ $Manager = (
 		(new Nether\Cache\Engines\MemcacheEngine)
 		->ServerAdd('localhost',11211)
 	)
-	->EngineAdd(new Nether\Cache\Engines\FilesystemEngine)
+	->EngineAdd(
+		(new Nether\Cache\Engines\FilesystemEngine)
+		->SetPath('/where/ever')
+	)
 );
 ```
 
@@ -122,9 +125,15 @@ Add servers to the Memcache pool.
 
 ```php
 new Nether\Cache\Engines\FilesystemEngine(
-	Path: string
+	Path: string,
+	UseHashType: string|NULL,
+	UseHashStruct: bool
+	UseFullDrop: bool
 );
 ```
+
+Path is the only required argument, that being the path to the directory where
+cache data should be stored.
 
 By default the filesystem engine works just like the others. Store data under
 the key "test" and get a file called "test" in the directory the engine is

@@ -56,13 +56,24 @@ implements EngineInterface {
 	////////////////////////////////////////////////////////////////
 
 	public function
-	__Construct(?string $Path=NULL) {
+	__Construct(
+		string $Path=NULL,
+		string $UseHashType=NULL,
+		bool $UseHashStruct=FALSE,
+		bool $UseFullDrop=TRUE
+	) {
 	/*//
 	@date 2021-05-30
 	//*/
 
 		if($Path !== NULL)
 		$this->SetPath($Path);
+
+		if($UseHashType !== NULL)
+		$this->UseHashType($UseHashType);
+
+		$this->UseHashStruct($UseHashStruct);
+		$this->UseFullDrop($UseFullDrop);
 
 		return;
 	}
@@ -230,12 +241,16 @@ implements EngineInterface {
 		$Path = $this->GetFilePath($File);
 		$Base = dirname($Path);
 
+		$UseKeyStruct = (
+			$this->UseKeyPath
+			|| ($this->UseHashType && $this->UseHashStruct)
+		);
+
 		// if enabled when a slash is detected in a key name then we will
 		// try to create the subdirectory structure requested. a decent way
 		// for the app to work around any jank filesystem restrictions.
 
-		if($this->UseKeyPath)
-		if(str_contains($File,'/'))
+		if($UseKeyStruct && str_contains($File,'/'))
 		static::MkDir($Base);
 
 		// make sure the request to store the file is servicable.
@@ -355,14 +370,6 @@ implements EngineInterface {
 	//*/
 
 		$this->UseHashStruct = $Should;
-
-		// with hash struct mode we also are going to want the key path
-		// to generate the subdirectories, so automatically turn that on
-		// in the case this was turned on.
-
-		if($Should)
-		$this->UseKeyPath($Should);
-
 		return $this;
 	}
 
