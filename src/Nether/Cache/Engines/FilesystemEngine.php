@@ -70,6 +70,9 @@ implements EngineInterface {
 		$File = $this->GenerateFilename($Key);
 		$Path = $this->GetFilePath($File);
 
+		// this needs to actually check if its a subdir and walk its way
+		// out removing each directory if its empty afterwards.
+
 		if($this->Has($Path))
 		unlink($Path);
 
@@ -100,9 +103,12 @@ implements EngineInterface {
 				);
 
 				foreach($Files as $File) {
-					if($File->IsDir())
-					$this->Plunge($File->GetPathname());
+					if($File->IsDir()) {
+						$this->Plunge($File->GetPathname());
+						rmdir($File->GetPathname());
+					}
 
+					else
 					unlink($File->GetPathname());
 				}
 
@@ -222,10 +228,21 @@ implements EngineInterface {
 	@date 2021-06-01
 	//*/
 
-		if($this->UseHashType)
-		return hash($this->UseHashType,$Key);
+		$Output = $Key;
 
-		return $Key;
+		if($this->UseHashType) {
+			$Output = hash($this->UseHashType,$Key);
+
+			if($this->UseHashStruct)
+			$Output = sprintf(
+				'%s%s%s',
+				substr($Output,0,2),
+				DIRECTORY_SEPARATOR,
+				substr($Output,2)
+			);
+		}
+
+		return $Output;
 	}
 
 	public function
@@ -306,6 +323,14 @@ implements EngineInterface {
 	//*/
 
 		$this->UseHashStruct = $Should;
+
+		// with hash struct mode we also are going to want the key path
+		// to generate the subdirectories, so automatically turn that on
+		// in the case this was turned on.
+
+		if($Should)
+		$this->UseKeyPath($Should);
+
 		return $this;
 	}
 
@@ -329,6 +354,9 @@ implements EngineInterface {
 	/*//
 	@date 2021-06-01
 	//*/
+
+		if(is_dir($Path))
+		return TRUE;
 
 		$OldMask = umask(0);
 

@@ -103,10 +103,7 @@ rerun it as many tests first check that it initialized empty.
 		return;
 	}
 
-	/**
-	@test
-	@covers Flush
-	*/
+	/** @test */
 	public function
 	TestFlush():
 	void {
@@ -131,6 +128,77 @@ rerun it as many tests first check that it initialized empty.
 
 		for($Iter = 1; $Iter <= 10; $Iter++)
 		$this->AssertFalse($Engine->Has("test-{$Iter}"));
+
+		return;
+	}
+
+	/** @test */
+	public function
+	TestHashMode():
+	void {
+	/*//
+	@date 2021-06-01
+	test that the Has method is properly handling both just the cache item
+	key as well as an absolute file uri.
+	//*/
+
+		$Hash = 'sha3-224';
+		$Path = $this->GetTestPath('data');
+		$Engine = new Engines\FilesystemEngine(Path:$Path);
+		$Key = 'test';
+		$Value = 'chapel';
+		$ExpectedFilename = sprintf(
+			'file://%s%s%s',
+			$Path, DIRECTORY_SEPARATOR, hash($Hash,$Key)
+		);
+
+		$Engine->UseHashType($Hash);
+		$Engine->Set($Key,$Value);
+		$this->AssertFileExists($ExpectedFilename);
+
+		$Engine->Drop($Key);
+		$this->AssertFileDoesNotExist($ExpectedFilename);
+
+		return;
+	}
+
+	/** @test */
+	public function
+	TestHashStructMode():
+	void {
+	/*//
+	@date 2021-06-01
+	test that the Has method is properly handling both just the cache item
+	key as well as an absolute file uri.
+	//*/
+
+		$Hash = 'sha3-224';
+		$Path = $this->GetTestPath('data');
+		$Engine = new Engines\FilesystemEngine(Path:$Path);
+		$Key = 'test';
+		$Value = 'chapel';
+		$ExpectedHash = hash($Hash,$Key);
+
+		// turns abcdef into ab/cdef
+		$ExpectedHashStruct = sprintf(
+			'%s%s%s',
+			substr($ExpectedHash,0,2),
+			DIRECTORY_SEPARATOR,
+			substr($ExpectedHash,2)
+		);
+
+		$ExpectedFilename = sprintf(
+			'file://%s%s%s',
+			$Path, DIRECTORY_SEPARATOR, $ExpectedHashStruct
+		);
+
+		$Engine->UseHashType($Hash);
+		$Engine->UseHashStruct(TRUE);
+		$Engine->Set($Key,$Value);
+		$this->AssertFileExists($ExpectedFilename);
+
+		$Engine->Drop($Key);
+		$this->AssertFileDoesNotExist($ExpectedFilename);
 
 		return;
 	}
