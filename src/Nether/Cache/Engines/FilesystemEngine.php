@@ -3,6 +3,7 @@
 namespace Nether\Cache\Engines;
 use Nether\Cache\Errors;
 
+use FilesystemIterator;
 use ValueError;
 use Nether\Cache\EngineInterface;
 use Nether\Cache\Struct\CacheObject;
@@ -69,7 +70,7 @@ implements EngineInterface {
 		$File = $this->GenerateFilename($Key);
 		$Path = $this->GetFilePath($File);
 
-		if($this->Has($Key))
+		if($this->Has($Path))
 		unlink($Path);
 
 		return;
@@ -82,10 +83,34 @@ implements EngineInterface {
 	@date 2021-05-30
 	//*/
 
-		// @todo
-		// so this needs to iterate over the cache dir and delete all of
-		// the files.
+		if(!$this->Path)
+		throw new ValueError('path is not set');
 
+		////////
+
+		$Plunger = new class {
+			public function
+			Plunge(string $Path):
+			void {
+				$Files = new FilesystemIterator(
+					$Path,
+					FilesystemIterator::KEY_AS_PATHNAME
+					| FilesystemIterator::CURRENT_AS_FILEINFO
+					| FilesystemIterator::SKIP_DOTS
+				);
+
+				foreach($Files as $File) {
+					if($File->IsDir())
+					$this->Plunge($File->GetPathname());
+
+					unlink($File->GetPathname());
+				}
+
+				return;
+			}
+		};
+
+		$Plunger->Plunge($this->Path);
 		return;
 	}
 
@@ -100,7 +125,7 @@ implements EngineInterface {
 		$Path = $this->GetFilePath($File);
 		$Data = NULL;
 
-		if($this->Has($Key)) {
+		if($this->Has($Path)) {
 			$Data = unserialize(file_get_contents($Path));
 
 			if($Data instanceof CacheObject)
@@ -121,7 +146,7 @@ implements EngineInterface {
 		$Path = $this->GetFilePath($File);
 		$Data = NULL;
 
-		if($this->Has($Key)) {
+		if($this->Has($Path)) {
 			$Data = unserialize(file_get_contents($Path));
 
 			if($Data instanceof CacheObject)
@@ -136,6 +161,7 @@ implements EngineInterface {
 	bool {
 	/*//
 	@date 2021-05-29
+	able to handle both the cache key but also a validly structured file uri.
 	//*/
 
 		$File = NULL;
@@ -213,6 +239,27 @@ implements EngineInterface {
 	}
 
 	public function
+	SetPath(string $Path):
+	static {
+	/*//
+	@date 2021-06-01
+	//*/
+
+		// @todo 2021-05-31
+		// value error is the wrong error. it looks like php has no good
+		// ones so just extend your own from exception.
+
+		if(!file_exists($Path) && !static::MkDir($Path))
+		throw new Errors\DirectoryNotWritable($Path);
+
+		if(!is_writable($Path))
+		throw new Errors\DirectoryNotWritable($Path);
+
+		$this->Path = $Path;
+		return $this;
+	}
+
+	public function
 	GetFilePath(string $Filename):
 	string {
 	/*//
@@ -233,27 +280,6 @@ implements EngineInterface {
 		$Output = str_replace('\\','/',$Output);
 
 		return $Output;
-	}
-
-	public function
-	SetPath(string $Path):
-	static {
-	/*//
-	@date 2021-06-01
-	//*/
-
-		// @todo 2021-05-31
-		// value error is the wrong error. it looks like php has no good
-		// ones so just extend your own from exception.
-
-		if(!file_exists($Path) && !static::MkDir($Path))
-		throw new Errors\DirectoryNotWritable($Path);
-
-		if(!is_writable($Path))
-		throw new Errors\DirectoryNotWritable($Path);
-
-		$this->Path = $Path;
-		return $this;
 	}
 
 	public function
