@@ -82,7 +82,67 @@ Nether\Cache\Struct\CacheObject Object
 )
 ```
 
-## FilesystemEngine Considerations
+# LocalEngine
 
-[Notes about keys with slashes.]
+```php
+new Nether\Cache\Engines\LocalEngine(
+	UseGlobal: bool
+);
+```
+
+Setting UseGlobal to TRUE will allow multiple instances to access the same
+dataset. This would allow creation of instances when needed rather than early
+in an app and stored as a singleton somewhere.
+
+The way this engine works is literally it is just an array that is local
+to this currently running application. Why ask Memcached for the same thing
+twice if we could remember it the first time?
+
+# MemcacheEngine
+
+```php
+new Nether\Cache\Engines\MemcacheEngine(
+	UseGlobal: bool,
+	Memcache: Memcache|null
+);
+```
+
+Setting UseGlobal to TRUE will allow multiple instances to access the same
+defined server pool. This would allow creation of instances when needed rather
+than early in an app and stored as a singleton somewhere.
+
+Providing a Memcache instance will use whatever pool that instance was built
+with. Additionally, this allows dependency injection of a mock for testing.
+
+`Engine->ServerAdd(string Host, int Port=11211)`
+
+Add servers to the Memcache pool.
+
+# FilesystemEngine
+
+```php
+new Nether\Cache\Engines\FilesystemEngine(
+	Path: string
+);
+```
+
+By default the filesystem engine works just like the others. Store data under
+the key "test" and get a file called "test" in the directory the engine is
+pointing at. There are additional features though to help make the filesystem
+engine more robust at larger scales.
+
+`Engine->UseHashType(?string HashAlgoName)`
+
+Given any hash name supported by your system instead of storing the cache file
+as a literal file called "test" it will be called whatever it hashes out to be.
+Setting it to NULL will disable the hashing.
+
+`Engine->UseHashStruct(bool Should)`
+
+If TRUE the engine will mess around with the final filename a bit to help avoid
+hitting filesystem limits for maximum files in a directory. Given a filename
+hash worked out to `abcdef` it will be transformed to be `ab/cdef` to help
+distribute the cache files across many directories. As of the time of this
+writing, this is the same as how Git stores its object files in the .git
+folders.
 
