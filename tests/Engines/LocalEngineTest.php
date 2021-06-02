@@ -127,8 +127,8 @@ extends TestCase {
 	@date 2021-05-30
 	//*/
 
-		$Engine1 = new Engines\LocalEngine(Global: TRUE);
-		$Engine2 = new Engines\LocalEngine(Global: TRUE);
+		$Engine1 = new Engines\LocalEngine(UseGlobal: TRUE);
+		$Engine2 = new Engines\LocalEngine(UseGlobal: TRUE);
 		$Key = 'test';
 		$Value = 'uhura';
 

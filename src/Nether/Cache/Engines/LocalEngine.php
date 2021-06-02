@@ -29,12 +29,12 @@ implements EngineInterface {
 	////////////////////////////////////////////////////////////////
 
 	public function
-	__Construct(bool $Global=FALSE) {
+	__Construct(bool $UseGlobal=FALSE) {
 	/*//
 	@date 2021-05-30
 	//*/
 
-		if($Global)
+		if($UseGlobal)
 		$this->UseGlobalStorage(TRUE);
 
 		return;
