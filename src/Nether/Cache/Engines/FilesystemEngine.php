@@ -409,7 +409,7 @@ implements EngineInterface {
 	}
 
 	static public function
-	MkDir(string $Path, int $Mode=0666):
+	MkDir(string $Path, int $Mode=0755):
 	bool {
 	/*//
 	@date 2021-06-01
