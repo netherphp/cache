@@ -61,7 +61,9 @@ implements EngineInterface {
 	@date 2021-05-30
 	//*/
 
+		if($Path !== NULL)
 		$this->SetPath($Path);
+
 		return;
 	}
 
@@ -98,9 +100,9 @@ implements EngineInterface {
 
 		$Iter = 0;
 		$Cur = NULL;
-		$Depth = substr_count($File,DIRECTORY_SEPARATOR) + 1;
+		$Depth = substr_count($File,'/') + 1;
 
-		if(str_contains($File,DIRECTORY_SEPARATOR)) {
+		if(str_contains($File,'/')) {
 			for($Iter = 1; $Iter < $Depth; $Iter++) {
 				$Cur = dirname($File,$Iter);
 
@@ -224,7 +226,6 @@ implements EngineInterface {
 	@date 2021-05-29
 	//*/
 
-		$DS = DIRECTORY_SEPARATOR;
 		$File = $this->GenerateFilename($Key);
 		$Path = $this->GetFilePath($File);
 		$Base = dirname($Path);
@@ -233,7 +234,8 @@ implements EngineInterface {
 		// try to create the subdirectory structure requested. a decent way
 		// for the app to work around any jank filesystem restrictions.
 
-		if(str_contains($File,$DS) && $this->UseKeyPath)
+		if($this->UseKeyPath)
+		if(str_contains($File,'/'))
 		static::MkDir($Base);
 
 		// make sure the request to store the file is servicable.
@@ -268,9 +270,8 @@ implements EngineInterface {
 
 			if($this->UseHashStruct)
 			$Output = sprintf(
-				'%s%s%s',
+				'%s/%s',
 				substr($Output,0,2),
-				DIRECTORY_SEPARATOR,
 				substr($Output,2)
 			);
 		}
@@ -320,9 +321,8 @@ implements EngineInterface {
 		throw new ValueError('path is not set');
 
 		$Output = sprintf(
-			'file://%s%s%s',
+			'file://%s/%s',
 			$this->Path,
-			DIRECTORY_SEPARATOR,
 			$Filename
 		);
 
@@ -339,9 +339,8 @@ implements EngineInterface {
 	@date 2021-06-01
 	//*/
 
-		$Valid = hash_algos();
-
-		if(!in_array($Which,$Valid))
+		if($Which !== NULL)
+		if(!static::IsHashSupported($Which))
 		throw new Errors\HashNotSupported($Which);
 
 		$this->UseHashType = $Which;
@@ -391,6 +390,16 @@ implements EngineInterface {
 
 	////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////
+
+	static public function
+	IsHashSupported(string $HashName):
+	bool {
+	/*//
+	@date 2021-06-02
+	//*/
+
+		return in_array($HashName,hash_algos());
+	}
 
 	static public function
 	MkDir(string $Path, int $Mode=0666):

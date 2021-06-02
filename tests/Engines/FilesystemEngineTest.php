@@ -44,12 +44,9 @@ rerun it as many tests first check that it initialized empty.
 		$Value = 'spock';
 		$Result = NULL;
 		$ExpectedFilename = sprintf(
-			'file://%s%s%s',
-			$Path, DIRECTORY_SEPARATOR, $Key
+			'file://%s/%s',
+			$Path, $Key
 		);
-
-		if(DIRECTORY_SEPARATOR === '\\')
-		$ExpectedFilename = str_replace('\\','/',$ExpectedFilename);
 
 		$this->AssertTrue($Engine instanceof Engines\FilesystemEngine);
 		$this->AssertDirectoryExists($Path);
@@ -85,8 +82,8 @@ rerun it as many tests first check that it initialized empty.
 
 		$Key = 'test';
 		$Filename = sprintf(
-			'file://%s%s%s',
-			$Path, DIRECTORY_SEPARATOR, $Key
+			'file://%s/%s',
+			$Path, $Key
 		);
 
 		$this->AssertFalse($Engine->Has($Key));
@@ -148,8 +145,8 @@ rerun it as many tests first check that it initialized empty.
 		$Key = 'test';
 		$Value = 'chapel';
 		$ExpectedFilename = sprintf(
-			'file://%s%s%s',
-			$Path, DIRECTORY_SEPARATOR, hash($Hash,$Key)
+			'file://%s/%s',
+			$Path, hash($Hash,$Key)
 		);
 
 		$Engine->UseHashType($Hash);
@@ -181,15 +178,14 @@ rerun it as many tests first check that it initialized empty.
 
 		// turns abcdef into ab/cdef
 		$ExpectedHashStruct = sprintf(
-			'%s%s%s',
-			substr($ExpectedHash,0,2),
-			DIRECTORY_SEPARATOR,
-			substr($ExpectedHash,2)
+			'%s/%s',
+			substr($ExpectedHash, 0, 2),
+			substr($ExpectedHash, 2)
 		);
 
 		$ExpectedFilename = sprintf(
-			'file://%s%s%s',
-			$Path, DIRECTORY_SEPARATOR, $ExpectedHashStruct
+			'file://%s/%s',
+			$Path, $ExpectedHashStruct
 		);
 
 		$Engine->UseHashType($Hash);
