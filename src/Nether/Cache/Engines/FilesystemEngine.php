@@ -1,6 +1,7 @@
 <?php
 
 namespace Nether\Cache\Engines;
+use Nether\Cache\Errors;
 
 use ValueError;
 use Nether\Cache\EngineInterface;
@@ -12,11 +13,34 @@ implements EngineInterface {
 @date 2021-05-29
 //*/
 
-	protected string
-	$Path;
+	protected ?string
+	$Path = NULL;
 	/*//
 	@date 2021-05-30
 	path everything gets saved to.
+	//*/
+
+	protected ?string
+	$UseHashType = NULL;
+	/*//
+	@date 2021-06-01
+	anything hash() accepts or NULL to not.
+	//*/
+
+	protected bool
+	$UseHashStruct = FALSE;
+	/*//
+	@date 2021-06-01
+	will mess around a bit to create subfolders that distribute the cache
+	files across many directories to avoid filesystem limitations.
+	//*/
+
+	protected bool
+	$UseKeyPath = TRUE;
+	/*//
+	@date 2021-06-01
+	if true, keys that contain slashes will try to create subdirectories
+	within the root of the cache path.
 	//*/
 
 	////////////////////////////////////////////////////////////////
@@ -29,7 +53,6 @@ implements EngineInterface {
 	//*/
 
 		$this->SetPath($Path);
-
 		return;
 	}
 
@@ -43,10 +66,11 @@ implements EngineInterface {
 	@date 2021-05-29
 	//*/
 
-		if($this->Has($Key)) {
-			$this->Data[$Key] = NULL;
-			unset($this->Data[$Key]);
-		}
+		$File = $this->GenerateFilename($Key);
+		$Path = $this->GetFilePath($File);
+
+		if($this->Has($Key))
+		unlink($Path);
 
 		return;
 	}
@@ -58,8 +82,9 @@ implements EngineInterface {
 	@date 2021-05-30
 	//*/
 
-		unset($this->Data);
-		$this->Data = [];
+		// @todo
+		// so this needs to iterate over the cache dir and delete all of
+		// the files.
 
 		return;
 	}
@@ -71,8 +96,16 @@ implements EngineInterface {
 	@date 2021-05-29
 	//*/
 
-		if($this->Has($Key))
-		return $this->Data[$Key]->Data;
+		$File = $this->GenerateFilename($Key);
+		$Path = $this->GetFilePath($File);
+		$Data = NULL;
+
+		if($this->Has($Key)) {
+			$Data = unserialize(file_get_contents($Path));
+
+			if($Data instanceof CacheObject)
+			return $Data->Data;
+		}
 
 		return NULL;
 	}
@@ -84,12 +117,15 @@ implements EngineInterface {
 	@date 2021-05-29
 	//*/
 
-		$Found = NULL;
+		$File = $this->GenerateFilename($Key);
+		$Path = $this->GetFilePath($File);
+		$Data = NULL;
 
 		if($this->Has($Key)) {
-			$Found = clone $this->Data[$Key];
-			$Found->Engine = $this;
-			return $Found;
+			$Data = unserialize(file_get_contents($Path));
+
+			if($Data instanceof CacheObject)
+			return $Data;
 		}
 
 		return NULL;
@@ -102,9 +138,17 @@ implements EngineInterface {
 	@date 2021-05-29
 	//*/
 
+		$File = NULL;
+		$Path = $Key;
+
+		if(!str_starts_with($Key,'file://')) {
+			$File = $this->GenerateFilename($Key);
+			$Path = $this->GetFilePath($File);
+		}
+
 		return (
-			array_key_exists($Key,$this->Data)
-			&& ($this->Data[$Key] instanceof CacheObject)
+			file_exists($Path)
+			&& is_readable($Path)
 		);
 	}
 
@@ -115,7 +159,30 @@ implements EngineInterface {
 	@date 2021-05-29
 	//*/
 
-		$this->Data[$Key] = new CacheObject($Val, Origin:$Origin);
+		$DS = DIRECTORY_SEPARATOR;
+		$File = $this->GenerateFilename($Key);
+		$Path = $this->GetFilePath($File);
+		$Base = dirname($Path);
+
+		// if enabled when a slash is detected in a key name then we will
+		// try to create the subdirectory structure requested. a decent way
+		// for the app to work around any jank filesystem restrictions.
+
+		if(str_contains($File,$DS) && $this->UseKeyPath)
+		static::MkDir($Base);
+
+		// make sure the request to store the file is servicable.
+
+		if(!file_exists($Base) || !is_writable($Base))
+		throw new Errors\DirectoryNotCraftable($Base);
+
+		// write the file.
+
+		file_put_contents(
+			$Path,
+			serialize(new CacheObject($Val, Origin:$Origin))
+		);
+
 		return;
 	}
 
@@ -123,31 +190,128 @@ implements EngineInterface {
 	////////////////////////////////////////////////////////////////
 
 	public function
-	MkDir($Path):
-	bool {
+	GenerateFilename(string $Key):
+	string {
+	/*//
+	@date 2021-06-01
+	//*/
 
-		return;
+		if($this->UseHashType)
+		return hash($this->UseHashType,$Key);
+
+		return $Key;
+	}
+
+	public function
+	GetPath():
+	?string {
+	/*//
+	@date 2021-06-01
+	//*/
+
+		return $this->Path;
+	}
+
+	public function
+	GetFilePath(string $Filename):
+	string {
+	/*//
+	@date 2021-06-01
+	//*/
+
+		if(!$this->Path)
+		throw new ValueError('path is not set');
+
+		$Output = sprintf(
+			'file://%s%s%s',
+			$this->Path,
+			DIRECTORY_SEPARATOR,
+			$Filename
+		);
+
+		if(DIRECTORY_SEPARATOR === '\\')
+		$Output = str_replace('\\','/',$Output);
+
+		return $Output;
 	}
 
 	public function
 	SetPath(string $Path):
 	static {
 	/*//
-	@date 2021-05-31
+	@date 2021-06-01
 	//*/
 
 		// @todo 2021-05-31
 		// value error is the wrong error. it looks like php has no good
 		// ones so just extend your own from exception.
 
-		if(!file_exists($Path))
-		if(!$this->MkDir($Path))
-		throw new ValueError('specified path does not exist and could not be created.');
+		if(!file_exists($Path) && !static::MkDir($Path))
+		throw new Errors\DirectoryNotWritable($Path);
 
 		if(!is_writable($Path))
-		throw new ValueError('the specified path is not writable.');
+		throw new Errors\DirectoryNotWritable($Path);
 
+		$this->Path = $Path;
 		return $this;
+	}
+
+	public function
+	UseHashType(?string $Which):
+	static {
+	/*//
+	@date 2021-06-01
+	//*/
+
+		$Valid = hash_algos();
+
+		if(!in_array($Which,$Valid))
+		throw new Errors\HashNotSupported($Which);
+
+		$this->UseHashType = $Which;
+		return $this;
+	}
+
+	public function
+	UseHashStruct(bool $Should):
+	static {
+	/*//
+	@date 2021-06-01
+	//*/
+
+		$this->UseHashStruct = $Should;
+		return $this;
+	}
+
+	public function
+	UseKeyPath(bool $Should):
+	static {
+	/*//
+	@date 2021-06-01
+	//*/
+
+		$this->UseKeyPath = $Should;
+		return $this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
+
+	static public function
+	MkDir(string $Path, int $Mode=0666):
+	bool {
+	/*//
+	@date 2021-06-01
+	//*/
+
+		$OldMask = umask(0);
+
+		if(!@mkdir($Path, $Mode, TRUE))
+		throw new Errors\DirectoryNotCraftable($Path);
+
+		chmod($Path, $Mode);
+		umask($OldMask);
+		return TRUE;
 	}
 
 }

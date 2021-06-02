@@ -81,3 +81,8 @@ Nether\Cache\Struct\CacheObject Object
 		)
 )
 ```
+
+## FilesystemEngine Considerations
+
+[Notes about keys with slashes.]
+
