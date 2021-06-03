@@ -1,8 +1,8 @@
 <?php
 
-namespace Nether\Cache\Traits;
+namespace Nether\Cache;
 
-trait CacheHitStats {
+abstract class EngineBase {
 
 	protected int
 	$CacheHit = 0;

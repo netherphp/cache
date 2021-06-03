@@ -1,13 +1,14 @@
 <?php
 
 namespace Nether\Cache\Engines;
-use Nether\Cache\Traits;
 use Nether\Cache\Errors;
 
+use Nether\Cache\EngineBase;
 use Nether\Cache\EngineInterface;
 use Nether\Cache\Struct\CacheObject;
 
 class LocalEngine
+extends EngineBase
 implements EngineInterface {
 /*//
 @date 2021-05-29
@@ -44,9 +45,6 @@ implements EngineInterface {
 
 	////////////////////////////////////////////////////////////////
 	// implement EngineInterface ///////////////////////////////////
-
-	use
-	Traits\CacheHitStats;
 
 	public function
 	Count():
