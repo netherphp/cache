@@ -1,6 +1,7 @@
 <?php
 
 namespace Nether\Cache\Engines;
+use Nether\Cache\Traits;
 use Nether\Cache\Errors;
 
 use FilesystemIterator;
@@ -80,6 +81,9 @@ implements EngineInterface {
 
 	////////////////////////////////////////////////////////////////
 	// implement EngineInterface ///////////////////////////////////
+
+	use
+	Traits\CacheHitStats;
 
 	public function
 	Drop(string $Key):
@@ -180,10 +184,13 @@ implements EngineInterface {
 		if($this->Has($Path)) {
 			$Data = unserialize(file_get_contents($Path));
 
-			if($Data instanceof CacheObject)
-			return $Data->Data;
+			if($Data instanceof CacheObject) {
+				$this->BumpHitCount();
+				return $Data->Data;
+			}
 		}
 
+		$this->BumpMissCount();
 		return NULL;
 	}
 
@@ -201,10 +208,13 @@ implements EngineInterface {
 		if($this->Has($Path)) {
 			$Data = unserialize(file_get_contents($Path));
 
-			if($Data instanceof CacheObject)
-			return $Data;
+			if($Data instanceof CacheObject) {
+				$this->BumpHitCount();
+				return $Data;
+			}
 		}
 
+		$this->BumpMissCount();
 		return NULL;
 	}
 

@@ -149,4 +149,37 @@ extends TestCase {
 		return;
 	}
 
+	/** @test */
+	public function
+	TestCacheHitStats():
+	void {
+	/*//
+	@date 2021-05-30
+	//*/
+
+		$Engine = new Engines\LocalEngine(UseGlobal: TRUE);
+		$Key = 'test';
+		$Value = 'data';
+
+		////////
+
+		$this->AssertEquals(0,$Engine->GetHitCount());
+		$this->AssertEquals(0,$Engine->GetMissCount());
+		$Engine->Set($Key,$Value);
+
+		$this->AssertEquals($Value,$Engine->Get($Key));
+		$this->AssertEquals(1,$Engine->GetHitCount());
+		$this->AssertEquals(1.0,$Engine->GetHitRatio());
+		$this->AssertEquals(0,$Engine->GetMissCount());
+		$this->AssertEquals(0.0,$Engine->GetMissRatio());
+
+		$this->AssertNull($Engine->Get('nope'));
+		$this->AssertEquals(1,$Engine->GetHitCount());
+		$this->AssertEquals(0.5,$Engine->GetHitRatio());
+		$this->AssertEquals(1,$Engine->GetMissCount());
+		$this->AssertEquals(0.5,$Engine->GetMissRatio());
+
+		return;
+	}
+
 }

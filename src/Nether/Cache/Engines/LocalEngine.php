@@ -1,6 +1,8 @@
 <?php
 
 namespace Nether\Cache\Engines;
+use Nether\Cache\Traits;
+use Nether\Cache\Errors;
 
 use Nether\Cache\EngineInterface;
 use Nether\Cache\Struct\CacheObject;
@@ -42,6 +44,9 @@ implements EngineInterface {
 
 	////////////////////////////////////////////////////////////////
 	// implement EngineInterface ///////////////////////////////////
+
+	use
+	Traits\CacheHitStats;
 
 	public function
 	Count():
@@ -88,9 +93,12 @@ implements EngineInterface {
 	@date 2021-05-29
 	//*/
 
-		if($this->Has($Key))
-		return $this->Data[$Key]->Data;
+		if($this->Has($Key)) {
+			$this->BumpHitCount();
+			return $this->Data[$Key]->Data;
+		}
 
+		$this->BumpMissCount();
 		return NULL;
 	}
 
@@ -106,9 +114,11 @@ implements EngineInterface {
 		if($this->Has($Key)) {
 			$Found = clone $this->Data[$Key];
 			$Found->Engine = $this;
+			$this->BumpHitCount();
 			return $Found;
 		}
 
+		$this->BumpMissCount();
 		return NULL;
 	}
 

@@ -1,6 +1,8 @@
 <?php
 
 namespace Nether\Cache\Engines;
+use Nether\Cache\Traits;
+use Nether\Cache\Errors;
 
 use Memcache;
 use Nether\Cache\EngineInterface;
@@ -26,17 +28,12 @@ implements EngineInterface {
 	global instance storage. only filled if used.
 	//*/
 
-	////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////
-
-	protected string
-	$Host = 'localhost';
-
-	protected int|string
-	$Port = 11211;
-
 	protected bool
 	$Compress = TRUE;
+	/*//
+	@date 2021-05-30
+	allow memcache to compress the data as it stores it.
+	//*/
 
 	////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////
@@ -70,6 +67,9 @@ implements EngineInterface {
 	////////////////////////////////////////////////////////////////
 	// implement EngineInterface ///////////////////////////////////
 
+	use
+	Traits\CacheHitStats;
+
 	public function
 	Drop(string $Key):
 	void {
@@ -101,9 +101,12 @@ implements EngineInterface {
 
 		$Found = unserialize($this->Pool->Get($Key));
 
-		if($Found instanceof CacheObject)
-		return $Found->Data;
+		if($Found instanceof CacheObject) {
+			$this->BumpHitCount();
+			return $Found->Data;
+		}
 
+		$this->BumpMissCount();
 		return NULL;
 	}
 
@@ -121,8 +124,10 @@ implements EngineInterface {
 		if($Found instanceof CacheObject) {
 			$Found = clone $Found;
 			$Found->Engine = $this;
+			$this->BumpHitCount();
 		}
 
+		$this->BumpMissCount();
 		return NULL;
 	}
 

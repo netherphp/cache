@@ -6,6 +6,9 @@ use Nether\Cache\Struct\CacheObject;
 
 interface EngineInterface {
 
+	/////////////////////////////////////////////////////////////////////////
+	// direct implementation required ///////////////////////////////////////
+
 	public function
 	Drop(string $Key):
 	void;
@@ -53,5 +56,16 @@ interface EngineInterface {
 	@date 2021-05-30
 	make there be data stored here.
 	//*/
+
+	/////////////////////////////////////////////////////////////////////////
+	// implemented by Traits\CacheHitStats //////////////////////////////////
+
+	public function
+	BumpHitCount(int $Inc=1):
+	static;
+
+	public function
+	BumpMissCount(int $Inc=1):
+	static;
 
 }
