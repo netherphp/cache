@@ -2,6 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use Nether\Cache;
+use Nether\Cache\Engines;
 
 class ManagerTest
 extends TestCase {
@@ -223,5 +224,42 @@ extends TestCase {
 		return;
 	}
 
+	/** @test */
+	public function
+	TestCacheHitStats():
+	void {
+	/*//
+	@date 2021-05-30
+	//*/
+
+		$Manager = new Nether\Cache\Manager;
+		$Manager->EngineAdd(new Engines\LocalEngine);
+
+		$Key = 'test';
+		$Value = 'worf';
+
+		////////
+
+		$this->AssertEquals(0,$Manager->GetHitCount());
+		$this->AssertEquals(0,$Manager->GetMissCount());
+		$Manager->Set($Key,$Value);
+
+		$this->AssertEquals($Value,$Manager->Get($Key));
+		$this->AssertEquals(1,$Manager->GetHitCount());
+		$this->AssertEquals(1.0,$Manager->GetHitRatio());
+		$this->AssertEquals(0,$Manager->GetMissCount());
+		$this->AssertEquals(0.0,$Manager->GetMissRatio());
+
+		// presently, Has() checks (done internally) are not counted for
+		// hits or misses.
+
+		$this->AssertNull($Manager->Get('nope'));
+		$this->AssertEquals(1,$Manager->GetHitCount());
+		$this->AssertEquals(1.0,$Manager->GetHitRatio());
+		$this->AssertEquals(0,$Manager->GetMissCount());
+		$this->AssertEquals(0.0,$Manager->GetMissRatio());
+
+		return;
+	}
 
 }

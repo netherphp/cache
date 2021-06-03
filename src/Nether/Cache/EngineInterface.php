@@ -68,4 +68,20 @@ interface EngineInterface {
 	BumpMissCount(int $Inc=1):
 	static;
 
+	public function
+	GetHitCount():
+	int;
+
+	public function
+	GetHitRatio():
+	float;
+
+	public function
+	GetMissCount():
+	int;
+
+	public function
+	GetMissRatio():
+	float;
+
 }

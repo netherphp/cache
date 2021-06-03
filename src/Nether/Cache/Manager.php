@@ -5,6 +5,7 @@ use Nether\Cache\Struct;
 
 use Nether\Object\Datastore;
 use Nether\Cache\EngineInterface;
+use Nether\Cache\Struct\EngineObject;
 
 class Manager {
 /*//
@@ -29,7 +30,7 @@ class Manager {
 	}
 
 	////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////
+	// basics from EngineInterface /d///////////////////////////////
 
 	public function
 	Drop(string $Key):
@@ -129,6 +130,69 @@ class Manager {
 
 		return $this;
 	}
+
+	public function
+	GetHitCount():
+	int {
+	/*//
+	@date 2021-06-03
+	//*/
+
+		return $this->Engines->Accumulate(
+			0,
+			fn(int $Cur, EngineObject $Val)
+			=> ($Cur + $Val->Engine->GetHitCount())
+		);
+	}
+
+	public function
+	GetHitRatio():
+	float {
+	/*//
+	@date 2021-06-03
+	//*/
+
+		$Hits = $this->GetHitCount();
+		$Total = $Hits + $this->GetMissCount();
+
+		if($Total === 0)
+		return 0;
+
+		return $Hits / $Total;
+	}
+
+	public function
+	GetMissCount():
+	int {
+	/*//
+	@date 2021-06-03
+	//*/
+
+		return $this->Engines->Accumulate(
+			0,
+			fn(int $Cur, EngineObject $Val)
+			=> ($Cur + $Val->Engine->GetMissCount())
+		);
+	}
+
+	public function
+	GetMissRatio():
+	float {
+	/*//
+	@date 2021-06-03
+	//*/
+
+		$Miss = $this->GetMissCount();
+		$Total = $Miss + $this->GetHitCount();
+
+		if($Total === 0)
+		return 0;
+
+		return $Miss / $Total;
+	}
+
+	////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
 
 	public function
 	Where(string $Key):

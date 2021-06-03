@@ -55,7 +55,12 @@ abstract class EngineBase {
 	@date 2021-06-02
 	//*/
 
-		return ($this->CacheHit / ($this->CacheHit + $this->CacheMiss));
+		$Total = $this->CacheHit + $this->CacheMiss;
+
+		if($Total === 0)
+		return 0;
+
+		return ($this->CacheHit / $Total);
 	}
 
 	public function
@@ -75,7 +80,12 @@ abstract class EngineBase {
 	@date 2021-06-02
 	//*/
 
-		return ($this->CacheMiss / ($this->CacheHit + $this->CacheMiss));
+		$Total = $this->CacheHit + $this->CacheMiss;
+
+		if($Total === 0)
+		return 0;
+
+		return ($this->CacheMiss / $Total);
 	}
 
 }
