@@ -79,7 +79,7 @@ extends TestCase {
 			Servers: [ 'localhost:11211' ]
 		);
 
-		// lmafo i do not think the basic bitch memcache ext without the d
+		// lmafo i do not think the basic bitch memcache without the d ext
 		// actually has a way to query what servers are in the pool. wtf.
 
 		$this->AssertTrue($Engine instanceof Engines\MemcacheEngine);

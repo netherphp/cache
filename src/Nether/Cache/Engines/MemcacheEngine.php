@@ -41,7 +41,7 @@ implements EngineInterface {
 
 	public function
 	__Construct(
-		bool $Global=FALSE,
+		bool $UseGlobal=FALSE,
 		Memcache $Memcache=NULL,
 		array $Servers=[]
 	) {
@@ -55,7 +55,7 @@ implements EngineInterface {
 		if($Memcache instanceof Memcache)
 		$this->Pool = $Memcache;
 		else
-		$this->UseGlobalPool($Global);
+		$this->UseGlobalPool($UseGlobal);
 
 		// if a list of servers was provided, add them to the pool.
 
