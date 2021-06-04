@@ -215,7 +215,7 @@ implements EngineInterface {
 			static::$PoolGlobal = new Memcache;
 
 			unset($this->Pool);
-			$this->Pool = &static::$Pool;
+			$this->Pool = &static::$PoolGlobal;
 		}
 
 		else {
