@@ -42,8 +42,8 @@ implements EngineInterface {
 	public function
 	__Construct(
 		bool $UseGlobal=FALSE,
-		Memcache $Memcache=NULL,
-		array $Servers=[]
+		?Memcache $Memcache=NULL,
+		?array $Servers=NULL
 	) {
 	/*//
 	@date 2021-05-30
@@ -59,7 +59,7 @@ implements EngineInterface {
 
 		// if a list of servers was provided, add them to the pool.
 
-		if(count($Servers))
+		if($Servers && count($Servers))
 		$this->ServerAddList($Servers);
 
 		return;
@@ -224,6 +224,16 @@ implements EngineInterface {
 		}
 
 		return $this;
+	}
+
+	static public function
+	HasGlobalPool():
+	bool {
+	/*//
+	@date 2021-06-03
+	//*/
+
+		return (static::$PoolGlobal instanceof Memcache);
 	}
 
 }
