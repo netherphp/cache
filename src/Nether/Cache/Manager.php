@@ -74,9 +74,12 @@ class Manager {
 
 		$Eng = NULL;
 
-		foreach($this->Engines as $Eng)
-		if($Eng->Engine->Has($Key))
-		return $Eng->Engine->Get($Key);
+		foreach($this->Engines as $Eng) {
+			if($Eng->Engine->Has($Key))
+			return $Eng->Engine->Get($Key);
+
+			$Eng->Engine->BumpMissCount();
+		}
 
 		return NULL;
 	}

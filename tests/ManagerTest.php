@@ -250,14 +250,11 @@ extends TestCase {
 		$this->AssertEquals(0,$Manager->GetMissCount());
 		$this->AssertEquals(0.0,$Manager->GetMissRatio());
 
-		// presently, Has() checks (done internally) are not counted for
-		// hits or misses.
-
 		$this->AssertNull($Manager->Get('nope'));
 		$this->AssertEquals(1,$Manager->GetHitCount());
-		$this->AssertEquals(1.0,$Manager->GetHitRatio());
-		$this->AssertEquals(0,$Manager->GetMissCount());
-		$this->AssertEquals(0.0,$Manager->GetMissRatio());
+		$this->AssertEquals(0.5,$Manager->GetHitRatio());
+		$this->AssertEquals(1,$Manager->GetMissCount());
+		$this->AssertEquals(0.5,$Manager->GetMissRatio());
 
 		return;
 	}
