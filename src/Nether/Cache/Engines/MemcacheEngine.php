@@ -233,7 +233,10 @@ implements EngineInterface {
 	@date 2021-06-03
 	//*/
 
-		return (static::$PoolGlobal instanceof Memcache);
+		return (
+			isset(static::$PoolGlobal)
+			&& (static::$PoolGlobal instanceof Memcache)
+		);
 	}
 
 }
