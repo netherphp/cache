@@ -1,8 +1,7 @@
 <?php
 
 namespace Nether\Cache;
-
-use Nether\Cache\Struct\CacheObject;
+use Nether\Cache\Struct;
 
 interface EngineInterface {
 
@@ -35,7 +34,7 @@ interface EngineInterface {
 
 	public function
 	GetCacheObject(string $Key):
-	?CacheObject;
+	?Struct\CacheObject;
 	/*//
 	@date 2021-05-30
 	get the full cache data wrapper stored here.
@@ -83,5 +82,9 @@ interface EngineInterface {
 	public function
 	GetMissRatio():
 	float;
+
+	public function
+	GetStats():
+	Struct\CacheStats;
 
 }

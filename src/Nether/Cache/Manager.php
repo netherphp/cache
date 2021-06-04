@@ -7,6 +7,7 @@ use Nether\Object\Datastore;
 use Nether\Cache\EngineInterface;
 use Nether\Cache\Struct\EngineObject;
 
+
 class Manager {
 /*//
 @date 2021-05-30
@@ -212,6 +213,16 @@ class Manager {
 		return $Eng->Engine;
 
 		return NULL;
+	}
+
+	public function
+	GetStats():
+	Struct\CacheStats {
+	/*//
+	@date 2021-06-03
+	//*/
+
+		return new Struct\CacheStats($this);
 	}
 
 	////////////////////////////////////////////////////////////////

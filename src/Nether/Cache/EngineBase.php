@@ -1,8 +1,10 @@
 <?php
 
 namespace Nether\Cache;
+use Nether\Cache\Struct;
 
-abstract class EngineBase {
+abstract class EngineBase
+implements EngineInterface {
 
 	protected int
 	$CacheHit = 0;
@@ -34,9 +36,6 @@ abstract class EngineBase {
 		$this->CacheMiss += $Inc;
 		return $this;
 	}
-
-	////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////
 
 	public function
 	GetHitCount():
@@ -86,6 +85,19 @@ abstract class EngineBase {
 		return 0;
 
 		return ($this->CacheMiss / $Total);
+	}
+
+	////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
+
+	public function
+	GetStats():
+	Struct\CacheStats {
+	/*//
+	@date 2021-06-03
+	//*/
+
+		return new Struct\CacheStats($this);
 	}
 
 }

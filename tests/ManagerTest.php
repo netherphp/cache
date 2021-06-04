@@ -233,10 +233,12 @@ extends TestCase {
 	//*/
 
 		$Manager = new Nether\Cache\Manager;
-		$Manager->EngineAdd(new Engines\LocalEngine);
+		$Engine = new Engines\LocalEngine;
+		$Manager->EngineAdd($Engine);
 
 		$Key = 'test';
 		$Value = 'worf';
+		$Stats = NULL;
 
 		////////
 
@@ -255,6 +257,18 @@ extends TestCase {
 		$this->AssertEquals(0.5,$Manager->GetHitRatio());
 		$this->AssertEquals(1,$Manager->GetMissCount());
 		$this->AssertEquals(0.5,$Manager->GetMissRatio());
+
+		$Stats = $Manager->GetStats();
+		$this->AssertEquals(1,$Stats->Hit);
+		$this->AssertEquals(0.5,$Stats->HitRatio);
+		$this->AssertEquals(1,$Stats->Miss);
+		$this->AssertEquals(0.5,$Stats->MissRatio);
+
+		$Stats = $Engine->GetStats();
+		$this->AssertEquals(1,$Stats->Hit);
+		$this->AssertEquals(0.5,$Stats->HitRatio);
+		$this->AssertEquals(1,$Stats->Miss);
+		$this->AssertEquals(0.5,$Stats->MissRatio);
 
 		return;
 	}
