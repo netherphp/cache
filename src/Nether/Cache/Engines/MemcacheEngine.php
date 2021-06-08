@@ -123,6 +123,7 @@ implements EngineInterface {
 			$Found = clone $Found;
 			$Found->Engine = $this;
 			$this->BumpHitCount();
+			return $Found;
 		}
 
 		$this->BumpMissCount();
