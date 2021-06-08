@@ -273,4 +273,72 @@ extends TestCase {
 		return;
 	}
 
+	/** @test */
+	public function
+	TestManagerBackfillEnabled():
+	void {
+	/*//
+	@date 2021-06-08
+	//*/
+
+		$Key = 'test';
+		$Value = 'mudd';
+
+		$Manager = new Nether\Cache\Manager;
+		$Engine1 = new Engines\LocalEngine;
+		$Engine2 = new Engines\LocalEngine;
+		$Manager->EngineAdd($Engine1);
+		$Manager->EngineAdd($Engine2);
+		$Manager->BackfillEnable(TRUE);
+
+		$Engine2->Set($Key,$Value);
+
+		// it should be in engine 2.
+		$this->AssertEquals($Value,$Engine2->Get($Key));
+		$this->AssertEquals($Engine2,$Manager->Where($Key));
+
+		// ask for it normally.
+		$this->AssertEquals($Value,$Manager->Get($Key));
+
+		// now its in engine 1 as well.
+		$this->AssertEquals($Value,$Engine1->Get($Key));
+		$this->AssertEquals($Engine1,$Manager->Where($Key));
+
+		return;
+	}
+
+	/** @test */
+	public function
+	TestManagerBackfillDisabled():
+	void {
+	/*//
+	@date 2021-06-08
+	//*/
+
+		$Key = 'test';
+		$Value = 'mudd';
+
+		$Manager = new Nether\Cache\Manager;
+		$Engine1 = new Engines\LocalEngine;
+		$Engine2 = new Engines\LocalEngine;
+		$Manager->EngineAdd($Engine1);
+		$Manager->EngineAdd($Engine2);
+		$Manager->BackfillEnable(FALSE);
+
+		$Engine2->Set($Key,$Value);
+
+		// it should be in engine 2.
+		$this->AssertEquals($Value,$Engine2->Get($Key));
+		$this->AssertEquals($Engine2,$Manager->Where($Key));
+
+		// ask for it normally.
+		$this->AssertEquals($Value,$Manager->Get($Key));
+
+		// i should still only be in engine 2.
+		$this->AssertNull($Engine1->Get($Key));
+		$this->AssertEquals($Engine2,$Manager->Where($Key));
+
+		return;
+	}
+
 }

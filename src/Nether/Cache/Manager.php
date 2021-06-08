@@ -16,6 +16,9 @@ class Manager {
 	protected ?Datastore
 	$Engines = NULL;
 
+	protected bool
+	$Backfill = TRUE;
+
 	////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////
 
@@ -74,10 +77,18 @@ class Manager {
 	//*/
 
 		$Eng = NULL;
+		$Iter = NULL;
+		$Output = NULL;
 
-		foreach($this->Engines as $Eng) {
-			if($Eng->Engine->Has($Key))
-			return $Eng->Engine->Get($Key);
+		foreach($this->Engines as $Iter => $Eng) {
+			if($Eng->Engine->Has($Key)) {
+				$Output = $Eng->Engine->Get($Key);
+
+				if($this->Backfill)
+				$this->Backfill($Iter,$Key,$Output);
+
+				return $Output;
+			}
 
 			$Eng->Engine->BumpMissCount();
 		}
@@ -223,6 +234,48 @@ class Manager {
 	//*/
 
 		return new Struct\CacheStats($this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////
+
+	protected function
+	Backfill(int $Iter, string $Key, mixed $Data):
+	static {
+	/*//
+	@date 2021-06-08
+	given the engine iter to start at, backfill the engines that
+	were skipped over so that they are not skipped again.
+	//*/
+
+		$Eng = NULL;
+		$Cur = 0;
+
+		foreach($this->Engines as $Cur => $Eng) {
+			if($Cur >= $Iter)
+			break;
+
+			$Eng->Engine->Set(
+				$Key,
+				$Data,
+				Origin: 'CacheManagerBackfill'
+			);
+		}
+
+		return $this;
+	}
+
+	public function
+	BackfillEnable(bool $Backfill):
+	static {
+	/*//
+	@date 2021-06-08
+	set if this cache manager should automatically backfill lower
+	priority cache engines when data is found within a higher one.
+	//*/
+
+		$this->Backfill = $Backfill;
+		return $this;
 	}
 
 	////////////////////////////////////////////////////////////////
